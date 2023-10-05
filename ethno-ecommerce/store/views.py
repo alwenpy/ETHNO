@@ -47,7 +47,7 @@ def detail(request, slug):
 
     review= Review.objects.filter(product=product).order_by('-rating')
     objects = Review.objects.all()
-    user_id=1
+    user_id=request.user.id
     dataset = []
     model = joblib.load('store/recommendation_model.pkl')
     for review in objects:
@@ -75,12 +75,14 @@ def detail(request, slug):
     recommended_product_ids = [prediction.iid for prediction in predictions[:4]]
     recproduct=Product.objects.filter(id__in=recommended_product_ids)
     print(recommended_product_ids)
+
     context = {
         'product': product,
         'related_products': related_products,
         'form':form,
-        'recproduct':recproduct
+        'recproduct':recproduct,
     }
+    print(user_id)
     return render(request, 'store/detail.html', context)
 
 
