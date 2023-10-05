@@ -213,7 +213,10 @@
         document.addEventListener('DOMContentLoaded', function () {
           const starRating = document.getElementById('star-rating')
           const ratingInput = document.getElementById('id_rating')
-        
+      
+          ratingInput.value = 0;
+          updateStars(0);
+      
           starRating.addEventListener('click', (event) => {
             const clickedStar = event.target
             if (clickedStar.classList.contains('star')) {
@@ -222,7 +225,7 @@
               updateStars(rating)
             }
           })
-        
+      
           function updateStars(rating) {
             const stars = starRating.querySelectorAll('.star')
             stars.forEach((star) => {
@@ -232,6 +235,7 @@
           }
         })
       </script>
+      
       {% if msg %}
         <div class="alert alert-success">{{ msg }}</div>
       {% endif %}

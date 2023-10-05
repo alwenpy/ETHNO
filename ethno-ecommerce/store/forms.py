@@ -53,14 +53,6 @@ class SetPasswordForm(SetPasswordForm):
 
 
 class ReviewForm(forms.ModelForm):
-    # RATING_CHOICES = (
-    #     ('1', '1 star'),
-    #     ('2', '2 stars'),
-    #     ('3', '3 stars'),
-    #     ('4', '4 stars'),
-    #     ('5', '5 stars'),
-    # )
-    # rating = forms.ChoiceField(choices=RATING_CHOICES, widget=forms.Select(attrs={'class': 'form-control'}))
     rating = forms.IntegerField(min_value=1, max_value=5)
 
     class Meta:
@@ -69,3 +61,15 @@ class ReviewForm(forms.ModelForm):
         widgets = {
             'comment': forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
         }
+    def clean_rating(self):
+        rating = self.cleaned_data.get('rating')
+
+        # Check if the rating is not valid
+        if rating < 1:
+            raise forms.ValidationError('Rating must be greater than or equal to 1.')
+
+        # Check if the rating has changed (skip validation if it hasn't)
+        if self.instance and self.instance.rating == rating:
+            return rating
+
+        return rating

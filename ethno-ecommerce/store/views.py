@@ -123,15 +123,45 @@ def add_review(request, slug):
             review.save()
             msg = 'Review Submitted Successfully'
         else:
+            print(form.errors)
+
             msg = 'Review form has errors'
     else:
         form = ReviewForm(instance=existing_review)
+    
+    review= Review.objects.filter(product=product).order_by('-rating')
+    objects = Review.objects.all()
+    user_id=request.user.id
+    dataset = []
+    model = joblib.load('store/recommendation_model.pkl')
+    for review in objects:
+        dataset.append({
+            'UserID': review.user.id,
+            'ProductID': review.product.id,
+            'Rating': review.rating,
+        })
+    ratings_data = pd.DataFrame(dataset)
+    reader = Reader(rating_scale=(0, 1))
+
+    data = Dataset.load_from_df(ratings_data[['UserID','ProductID','Rating']], reader)
+
+    trainset, testset = train_test_split(data, test_size=0.01)
+    top_n=5
+
+    testset = trainset.build_anti_testset()
+    testset = filter(lambda x: x[0] == user_id, testset)
+
+    predictions = model.test(testset)
+
+    predictions.sort(key=lambda x: x.est, reverse=True)
+    
+    top_n_recommendations = predictions    
+    recommended_product_ids = [prediction.iid for prediction in predictions[:4]]
+    recproduct=Product.objects.filter(id__in=recommended_product_ids)
 
     reviews = Review.objects.filter(product=product).order_by('-rating')
-    objects = Review.objects.filter(product=product,rating=rating,user=user)
-    
 
-    return render(request, 'store/detail.html', {'form': form, 'product': product, 'msg': msg, 'related_products': related_products, 'reviews': reviews})
+    return render(request, 'store/detail.html', {'form': form, 'product': product, 'msg': msg, 'related_products': related_products, 'reviews': reviews,'recproduct':recproduct})
 
 # Authentication Starts Here
 
