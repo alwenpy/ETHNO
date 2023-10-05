@@ -17,7 +17,7 @@ from surprise import Dataset, Reader, SVD
 from surprise.model_selection import train_test_split
 from surprise import accuracy
 import joblib
-# Create your views here.
+
 
 def home(request):
     categories = Category.objects.filter(is_active=True, is_featured=True)[:3]
@@ -82,8 +82,6 @@ def detail(request, slug):
         'recproduct':recproduct
     }
     return render(request, 'store/detail.html', context)
-
-
 
 
 def all_categories(request):
