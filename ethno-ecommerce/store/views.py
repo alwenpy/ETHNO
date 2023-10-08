@@ -122,7 +122,7 @@ def add_review(request, slug):
             review.user = request.user
             review.save()
             msg = 'Review Submitted Successfully'
-            return redirect('store:detail', slug=slug)
+            # return redirect('store:', slug=slug)
 
         else:
             print(form.errors)
