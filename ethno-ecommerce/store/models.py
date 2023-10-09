@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User,AbstractUser
 
-# Create your models here.
+# Model for storing user addresses.
 class Address(models.Model):
     user = models.ForeignKey(User, verbose_name="User", on_delete=models.CASCADE)
     locality = models.CharField(max_length=150, verbose_name="Nearest Location")
@@ -11,7 +11,7 @@ class Address(models.Model):
     def __str__(self):
         return self.locality
 
-
+# Model for product categories.
 class Category(models.Model):
     title = models.CharField(max_length=50, verbose_name="Category Title")
     slug = models.SlugField(max_length=55, verbose_name="Category Slug")
@@ -29,7 +29,7 @@ class Category(models.Model):
     def __str__(self):
         return self.title
 
-
+# Model for products.
 class Product(models.Model):
     title = models.CharField(max_length=150, verbose_name="Product Title")
     slug = models.SlugField(max_length=160, verbose_name="Product Slug")
@@ -51,7 +51,7 @@ class Product(models.Model):
     def __str__(self):
         return self.title
 
-
+# Model for user shopping carts.
 class Cart(models.Model):
     user = models.ForeignKey(User, verbose_name="User", on_delete=models.CASCADE)
     product = models.ForeignKey(Product, verbose_name="Product", on_delete=models.CASCADE)
@@ -62,12 +62,12 @@ class Cart(models.Model):
     def __str__(self):
         return str(self.user)
     
-    # Creating Model Property to calculate Quantity x Price
+    # Model property to calculate the total price for items in the cart.
     @property
     def total_price(self):
         return self.quantity * self.product.price
 
-
+# Model for order status choices.
 STATUS_CHOICES = (
     ('Pending', 'Pending'),
     ('Accepted', 'Accepted'),
@@ -77,6 +77,7 @@ STATUS_CHOICES = (
     ('Cancelled', 'Cancelled')
 )
 
+# Model for user orders.
 class Order(models.Model):
     user = models.ForeignKey(User, verbose_name="User", on_delete=models.CASCADE)
     address = models.ForeignKey(Address, verbose_name="Shipping Address", on_delete=models.CASCADE)
@@ -89,7 +90,7 @@ class Order(models.Model):
         default="Pending"
         )   
 
-    
+# Model for product reviews.
 class Review(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='reviews')
     user = models.ForeignKey(User, on_delete=models.CASCADE) 

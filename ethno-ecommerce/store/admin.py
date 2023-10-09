@@ -14,6 +14,7 @@ from .models import Address, Category, Product, Cart, Order,Review
 # admin.site.register(CustomUser, CustomUserAdmin)
 
 
+# Define the custom admin classes for each model.
 class AddressAdmin(admin.ModelAdmin):
     list_display = ('user', 'locality', 'city', 'state')
     list_filter = ('city', 'state')
@@ -69,6 +70,7 @@ class ReviewAdmin(admin.ModelAdmin):
         return 
 
 
+# Register the models with their respective custom admin classes.
 
 admin.site.register(Review, ReviewAdmin)    
 admin.site.register(Address, AddressAdmin)

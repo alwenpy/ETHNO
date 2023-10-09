@@ -19,7 +19,6 @@ urlpatterns = [
     path('orders/', views.orders, name="orders"),
 
     #URL for Products
-    
     path('product/<slug:slug>/', views.detail, name="product-detail"),
     path('categories/', views.all_categories, name="all-categories"),
     path('<slug:slug>/', views.category_products, name="category-products"),

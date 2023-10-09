@@ -12,6 +12,7 @@ from django.utils.translation import gettext, gettext_lazy as _
 from .models import Review
 
 
+# Form for user registration.
 class RegistrationForm(UserCreationForm):
     password1 = forms.CharField(label='Password', widget=forms.PasswordInput(attrs={'class':'form-control', 'placeholder':'Password'}))
     password2 = forms.CharField(label="Confirm Password", widget=forms.PasswordInput(attrs={'class':'form-control', 'placeholder':'Confirm Password'}))
@@ -23,35 +24,35 @@ class RegistrationForm(UserCreationForm):
         labels = {'email': 'Email'}
         widgets = {'username': forms.TextInput(attrs={'class': 'form-control', 'placeholder':'Username'})}
 
-
+# Form for user login.
 class LoginForm(AuthenticationForm):
     username = UsernameField(widget=forms.TextInput(attrs={'autofocus': True, 'class': 'form-control'}))
     password = forms.CharField(label=_("Password"), strip=False, widget=forms.PasswordInput(attrs={'autocomplete':'current-password', 'class':'form-control'}))
 
-
+# Form for adding or editing user addresses.
 class AddressForm(forms.ModelForm):
     class Meta:
         model = Address
         fields = ['locality', 'city', 'state']
         widgets = {'locality':forms.TextInput(attrs={'class':'form-control', 'placeholder':'Popular Place like Restaurant, Religious Site, etc.'}), 'city':forms.TextInput(attrs={'class':'form-control', 'placeholder':'City'}), 'state':forms.TextInput(attrs={'class':'form-control', 'placeholder':'State or Province'})}
 
-
+# Form for changing the user's password.
 class PasswordChangeForm(PasswordChangeForm):
     old_password = forms.CharField(label=_("Old Password"), strip=False, widget=forms.PasswordInput(attrs={'autocomplete':'current-password', 'auto-focus':True, 'class':'form-control', 'placeholder':'Current Password'}))
     new_password1 = forms.CharField(label=_("New Password"), strip=False, widget=forms.PasswordInput(attrs={'autocomplete':'new-password', 'class':'form-control', 'placeholder':'New Password'}), help_text=password_validation.password_validators_help_text_html())
     new_password2 = forms.CharField(label=_("Confirm Password"), strip=False, widget=forms.PasswordInput(attrs={'autocomplete':'new-password', 'class':'form-control', 'placeholder':'Confirm Password'}))
 
-
+# Form for requesting a password reset.
 class PasswordResetForm(PasswordResetForm):
     email = forms.EmailField(label=_("Email"), max_length=254, widget=forms.EmailInput(attrs={'autocomplete':'email', 'class':'form-control'}))
 
-
+# Form for setting a new password after a reset.
 class SetPasswordForm(SetPasswordForm):
     new_password1 = forms.CharField(label=_("New Password"), strip=False, widget=forms.PasswordInput(attrs={'autocomplete':'new-password', 'class':'form-control'}), help_text=password_validation.password_validators_help_text_html())
     new_password2 = forms.CharField(label=_("Confirm Password"), strip=False, widget=forms.PasswordInput(attrs={'autocomplete':'new-password','class':'form-control'}))
 
 
-
+# Form for submitting product reviews, including a rating and comment.
 class ReviewForm(forms.ModelForm):
     rating = forms.IntegerField(min_value=1, max_value=5)
 

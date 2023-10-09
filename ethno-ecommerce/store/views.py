@@ -19,6 +19,7 @@ from surprise import accuracy
 import joblib
 
 
+# This function handles the homepage of the store, displaying featured categories and products.
 def home(request):
     categories = Category.objects.filter(is_active=True, is_featured=True)[:3]
     products = Product.objects.filter(is_active=True, is_featured=True)[:4]
@@ -29,6 +30,8 @@ def home(request):
     return render(request, 'store/index.html', context)
 
 
+# This function displays the details of a specific product, allows users to submit reviews,
+# and provides recommendations based on user reviews.
 def detail(request, slug):
     product = get_object_or_404(Product, slug=slug)
     related_products = Product.objects.exclude(id=product.id).filter(is_active=True, category=product.category)[:4]
@@ -85,12 +88,12 @@ def detail(request, slug):
     print(user_id)
     return render(request, 'store/detail.html', context)
 
-
+# This function displays all the categories available in the store.
 def all_categories(request):
     categories = Category.objects.filter(is_active=True)
     return render(request, 'store/categories.html', {'categories':categories})
 
-
+# This function displays products belonging to a specific category and paginates the results.
 def category_products(request, slug):
     category = get_object_or_404(Category, slug=slug)
     products = Product.objects.filter(is_active=True, category=category)
@@ -105,9 +108,7 @@ def category_products(request, slug):
     }
     return render(request, 'store/category_products.html', context)
 
-#add review function
-
-
+# This function allows users to add or edit a review for a specific product.
 def add_review(request, slug):
     product = get_object_or_404(Product, slug=slug)
     related_products = Product.objects.exclude(id=product.id).filter(is_active=True, category=product.category)[:4]
@@ -166,7 +167,8 @@ def add_review(request, slug):
     return render(request, 'store/detail.html', {'form': form, 'product': product, 'msg': msg, 'related_products': related_products, 'reviews': reviews,'recproduct':recproduct})
 
 # Authentication Starts Here
-
+# This class-based view handles user registration. It displays the registration form and processes
+# user registration when a POST request is received.
 class RegistrationView(View):
     def get(self, request):
         form = RegistrationForm()
@@ -179,14 +181,15 @@ class RegistrationView(View):
             form.save()
         return render(request, 'account/register.html', {'form': form})
         
-
+# This function displays the user's profile information, including addresses and order history,
+# after the user has logged in.
 @login_required
 def profile(request):
     addresses = Address.objects.filter(user=request.user)
     orders = Order.objects.filter(user=request.user)
     return render(request, 'account/profile.html', {'addresses':addresses, 'orders':orders})
 
-
+# This class-based view handles address management. It allows users to add new addresses to their profile.
 @method_decorator(login_required, name='dispatch')
 class AddressView(View):
     def get(self, request):
@@ -205,7 +208,7 @@ class AddressView(View):
             messages.success(request, "New Address Added Successfully.")
         return redirect('store:profile')
 
-
+# This function allows users to remove an address from their profile.
 @login_required
 def remove_address(request, id):
     a = get_object_or_404(Address, user=request.user, id=id)
@@ -213,6 +216,7 @@ def remove_address(request, id):
     messages.success(request, "Address removed.")
     return redirect('store:profile')
 
+# This function handles adding products to the user's shopping cart.
 @login_required
 def add_to_cart(request):
     user = request.user
@@ -230,7 +234,7 @@ def add_to_cart(request):
     
     return redirect('store:cart')
 
-
+# This function displays the user's shopping cart, including product details, quantities, and total amount.
 @login_required
 def cart(request):
     user = request.user
@@ -258,7 +262,7 @@ def cart(request):
     }
     return render(request, 'store/cart.html', context)
 
-
+# This function allows users to remove a product from their shopping cart.
 @login_required
 def remove_cart(request, cart_id):
     if request.method == 'GET':
@@ -267,7 +271,7 @@ def remove_cart(request, cart_id):
         messages.success(request, "Product removed from Cart.")
     return redirect('store:cart')
 
-
+# This function allows users to increase the quantity of a product in their shopping cart.
 @login_required
 def plus_cart(request, cart_id):
     if request.method == 'GET':
@@ -276,7 +280,7 @@ def plus_cart(request, cart_id):
         cp.save()
     return redirect('store:cart')
 
-
+# This function allows users to decrease the quantity of a product in their shopping cart.
 @login_required
 def minus_cart(request, cart_id):
     if request.method == 'GET':
@@ -289,7 +293,7 @@ def minus_cart(request, cart_id):
             cp.save()
     return redirect('store:cart')
 
-
+# This function handles the checkout process, transferring items from the cart to the user's order history.
 @login_required
 def checkout(request):
     user = request.user
@@ -305,22 +309,16 @@ def checkout(request):
         c.delete()
     return redirect('store:orders')
 
-
+# This function displays the user's order history.
 @login_required
 def orders(request):
     all_orders = Order.objects.filter(user=request.user).order_by('-ordered_date')
     return render(request, 'store/orders.html', {'orders': all_orders})
 
-
-
-
-
+# This function handles the "Shop" page of the store.
 def shop(request):
     return render(request, 'store/shop.html')
 
-
-
-
-
+# This function is a placeholder for testing purposes.
 def test(request):
     return render(request, 'store/test.html')
