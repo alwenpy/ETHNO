@@ -16,7 +16,7 @@ import pandas as pd
 from surprise import Dataset, Reader, SVD
 from surprise.model_selection import train_test_split
 from surprise import accuracy
-import joblib
+import joblib, random
 
 
 # This function handles the homepage of the store, displaying featured categories and products.
@@ -75,9 +75,11 @@ def detail(request, slug):
     predictions.sort(key=lambda x: x.est, reverse=True)
     
     top_n_recommendations = predictions    
-    recommended_product_ids = [prediction.iid for prediction in predictions[:4]]
-    recproduct=Product.objects.filter(id__in=recommended_product_ids)
-    print(recommended_product_ids)
+    recommended_product_ids = [prediction.iid for prediction in predictions]
+    final=random.sample(recommended_product_ids, 4)
+    recproduct=Product.objects.filter(id__in=final)
+    
+    print(random.sample(recommended_product_ids, 4))
 
     context = {
         'product': product,
@@ -159,8 +161,9 @@ def add_review(request, slug):
     predictions.sort(key=lambda x: x.est, reverse=True)
     
     top_n_recommendations = predictions    
-    recommended_product_ids = [prediction.iid for prediction in predictions[:4]]
-    recproduct=Product.objects.filter(id__in=recommended_product_ids)
+    recommended_product_ids = [prediction.iid for prediction in predictions]
+    final=random.sample(recommended_product_ids, 4)
+    recproduct=Product.objects.filter(id__in=final)
 
     reviews = Review.objects.filter(product=product).order_by('-rating')
 
